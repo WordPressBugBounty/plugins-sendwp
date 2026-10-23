@@ -3,7 +3,7 @@ Contributors: sendwpteam, kbjohnson90, krmoorhouse, nahuelmahe, mrpritchett
 Donate Link: https://sendwp.com
 Tags: forms, email, transactional
 Requires at least: 5.1
-Tested up to: 6.6
+Tested up to: 7.1
 Requires PHP: 5.6.0
 Stable Tag: 1.4.9
 License: GPLv2 or later
