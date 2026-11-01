@@ -3,11 +3,11 @@
 /**
  * Plugin Name: SendWP
  * Description: The easy solution to transactional email in WordPress.
- * Version: 1.4.9
- * Requires PHP: 5.6
+ * Version: 1.4.11
+ * Requires PHP: 8.2
  */
 
-if (version_compare(PHP_VERSION, '5.6', '<')) {
+if (version_compare(PHP_VERSION, '8.2', '<')) {
     require_once plugin_dir_path(__FILE__) . 'includes/compatibility.php';
     add_action('admin_notices', 'sendwp_below_php_version_notice');
     return;

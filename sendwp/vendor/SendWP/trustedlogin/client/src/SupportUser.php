@@ -543,7 +543,7 @@ final class SupportUser {
 	 *
 	 * @return string|WP_Error Value of $identifier_meta_key if worked; empty string or WP_Error if not.
 	 */
-	public function setup( $user_id, $site_identifier_hash, $expiration_timestamp = null, Cron $cron = null ) {
+	public function setup( $user_id, $site_identifier_hash, $expiration_timestamp = null, ?Cron $cron = null ) {
 
 		if ( $expiration_timestamp ) {
 

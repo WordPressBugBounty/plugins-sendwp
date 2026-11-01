@@ -10,6 +10,7 @@ if( defined( 'WP_DEBUG' ) && WP_DEBUG ){
 }
 
 add_action('admin_notices', 'sendwp_forwarding_disabled_notice');
+add_action('admin_notices', 'sendwp_secret_mismatch_notice');
 add_action('wp_ajax_sendwp_forwarding', 'sendwp_maybe_disable_forwarding');
 
 // Register our pulse monitor.

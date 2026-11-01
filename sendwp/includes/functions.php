@@ -32,8 +32,54 @@ function sendwp_get_client_secret()
     if(!$secret) {
         $secret = sendwp_generate_secret();
         sendwp_set_client_secret($secret);
+
+        // A connected site that lost its secret can't be recognised by SendWP
+        // until it reconnects, so say so rather than carry on quietly.
+        if (sendwp_client_connected()) {
+            sendwp_flag_secret_mismatch();
+        }
     }
     return $secret;
+}
+
+function sendwp_flag_secret_mismatch()
+{
+    if (! get_option('sendwp_secret_mismatch')) {
+        update_option('sendwp_secret_mismatch', time());
+    }
+}
+
+function sendwp_secret_mismatch()
+{
+    return (bool) get_option('sendwp_secret_mismatch');
+}
+
+/**
+ * SendWP answers with "X-SendWP-Secret: mismatch" when this site's secret
+ * isn't the one it has on file. Reconnecting stores the current one.
+ */
+function sendwp_note_secret_status($response)
+{
+    if (is_wp_error($response)) return;
+
+    if ('mismatch' === wp_remote_retrieve_header($response, 'x-sendwp-secret')) {
+        sendwp_flag_secret_mismatch();
+        return;
+    }
+
+    $code = (int) wp_remote_retrieve_response_code($response);
+    if (200 <= $code && 300 > $code) {
+        delete_option('sendwp_secret_mismatch');
+    }
+}
+
+function sendwp_secret_mismatch_notice()
+{
+    if (! current_user_can('manage_options') || ! sendwp_secret_mismatch()) return;
+    if (isset($_GET['page']) && 'sendwp' == $_GET['page']) return;
+
+    wp_enqueue_style('sendwp-notices', plugins_url( 'assets/css/admin/notices.css', __DIR__));
+    include 'admin/views/reconnect-notice.html.php';
 }
 
 function sendwp_set_client_secret( $secret )
@@ -58,6 +104,8 @@ function sendwp_generate_secret( $length = 40 )
 function sendwp_connect_client()
 {
     update_option('sendwp_client_connected', '1');
+    // Connecting stores this site's current secret with SendWP.
+    delete_option('sendwp_secret_mismatch');
 }
 
 function sendwp_disconnect_client()
@@ -174,6 +222,7 @@ function sendwp_pulse_monitor()
     $status = 'unknown';
     $request = \SendWP\API\Request::create('clients/status');
     $response = $request->post( [] );
+    sendwp_note_secret_status($response);
 
     if(is_wp_error($response)){
         set_transient('sendwp_pulse_monitor', $response->get_error_message(), 10 * MINUTE_IN_SECONDS);
@@ -184,10 +233,12 @@ function sendwp_pulse_monitor()
     set_transient('sendwp_pulse_monitor', $response_body, 10 * MINUTE_IN_SECONDS);
 
     $status = json_decode($response_body);
+    // SendWP answers with a bare JSON string, which has no message: nothing changes then, as before.
+    $message = is_object($status) && isset($status->message) ? $status->message : '';
 
-    if ('not-connected' == $status->message) {
+    if ('not-connected' == $message) {
         sendwp_disconnect_client();
-    } elseif ('connected' == $status->message) {
+    } elseif ('connected' == $message) {
         sendwp_connect_client();
     }
 }
@@ -225,6 +276,7 @@ function sendwp_reset_all_plugin_data()
             'sendwp_client_secret',
             'sendwp_client_connected',
             'sendwp_forwarding_enabled',
+            'sendwp_secret_mismatch',
         ];
 
         foreach ($options as $option) {

@@ -1,15 +1,20 @@
 <?php
 $connected = sendwp_client_connected();
 $forwarding = sendwp_forwarding_enabled();
+$mismatch = sendwp_secret_mismatch();
 ?>
 
 <div class="sendwp-page">
 
 	<img src="<?php echo \SendWP\Assets::image_url('logo-render.png'); ?>" alt="SendWP" class="logo" />
 
-	<?php if(!$connected) { ?>
+	<?php if(!$connected || $mismatch) { ?>
 	<div id="sendwp-connect">
+		<?php if ($connected) { ?>
+		<p><?php _e('Your site\'s connection to sendwp.com needs to be renewed. Reconnect to keep your email sending.', 'sendwp'); ?></p>
+		<?php } else { ?>
 		<p><?php _e('Your site is currently not connected to sendwp.com.', 'sendwp'); ?></p>
+		<?php } ?>
 		<form method="POST" action="<?php echo sendwp_get_server_url(); ?>_/signup">
 			<input type="hidden" name="client_name" value="<?php echo sendwp_get_client_name(); ?>">
 			<input type="hidden" name="client_url" value="<?php echo sendwp_get_client_url(); ?>">
@@ -17,7 +22,7 @@ $forwarding = sendwp_forwarding_enabled();
 			<input type="hidden" name="client_secret" value="<?php echo sendwp_get_client_secret(); ?>">
 			<input type="hidden" name="partner_id" value="<?php echo sendwp_get_client_partner_id(); ?>">
 			<button type="submit" class="button button-primary">
-				<?php _e('Connect to SendWP', 'sendwp'); ?>
+				<?php $connected ? _e('Reconnect to SendWP', 'sendwp') : _e('Connect to SendWP', 'sendwp'); ?>
 			</button>
 		</form>
 	</div>

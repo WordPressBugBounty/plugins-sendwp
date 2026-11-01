@@ -5,6 +5,7 @@ register_deactivation_hook(plugin_dir_path(__DIR__) . 'sendwp.php', function () 
         'sendwp_client_secret',
         'sendwp_client_connected',
         'sendwp_forwarding_enabled',
+        'sendwp_secret_mismatch',
         '_transient_timeout_sendwp_pulse_monitor',
         '_transient_sendwp_pulse_monitor',
     ];

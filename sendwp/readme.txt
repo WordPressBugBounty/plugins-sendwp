@@ -4,8 +4,8 @@ Donate Link: https://sendwp.com
 Tags: forms, email, transactional
 Requires at least: 5.1
 Tested up to: 7.1
-Requires PHP: 5.6.0
-Stable Tag: 1.4.9
+Requires PHP: 8.2
+Stable Tag: 1.4.11
 License: GPLv2 or later
 
 Say hello to the easy solution to transactional email in WordPress.
@@ -30,11 +30,25 @@ A. No. This plugin only serves to connect you to the SendWP service, so if you d
 
 == Upgrade Notice ==
 
-= 1.4.9 =
+= 1.4.11 =
 
-* Bug fixes and improvements.
+* SendWP now needs PHP 8.2 or later. Check your site's PHP version before updating.
+
+= 1.4.10 =
+
+* Tells you when this site needs to reconnect to SendWP to keep sending.
 
 == Changelog ==
+
+= 1.4.11 =
+
+* SendWP now needs PHP 8.2 or later, and is tested up to WordPress 7.1.
+* Clears a PHP 8.4 deprecation notice from the bundled TrustedLogin library.
+* Fixes a PHP warning logged on each check of the connection to SendWP.
+
+= 1.4.10 =
+
+* Shows a notice asking you to reconnect when SendWP no longer recognises this site's security key, so email keeps sending.
 
 = 1.4.9 =
 

@@ -102,6 +102,7 @@ class Mailer implements MailerInterface
 
         // Response is empty...
         $response = $this->request->post($args);
+        sendwp_note_secret_status($response);
 
         return true; // Sent by the Service.
     }
